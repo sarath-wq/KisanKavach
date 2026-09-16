@@ -57,9 +57,9 @@ export default function Header() {
       {/* Main Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-11 h-11 relative rounded-xl overflow-hidden shadow-md border border-slate-200 bg-white p-0.5 shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 relative rounded-xl overflow-hidden shadow-md border border-emerald-200 bg-white p-0.5 shrink-0 group-hover:scale-105 transition-transform">
             <Image
-              src="/logo.png"
+              src="/logo-shield.png"
               alt="KisanKavach Official Shield Logo"
               width={44}
               height={44}
@@ -67,12 +67,12 @@ export default function Header() {
             />
           </div>
           <div>
-            <div className="flex items-center space-x-1 font-extrabold text-2xl tracking-tight leading-none">
-              <span className="text-emerald-900">Kisan</span>
-              <span className="text-orange-600">Kavach</span>
+            <div className="flex items-center space-x-1 font-black text-2xl tracking-tight leading-none">
+              <span className="text-[#044E29]">Kisan</span>
+              <span className="text-[#EA580C]">Kavach</span>
               <span className="text-xs font-bold text-slate-400 ml-1.5 hidden md:inline">Karnataka</span>
             </div>
-            <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase mt-0.5">
+            <p className="text-[10px] font-black tracking-widest text-[#044E29] uppercase mt-0.5">
               PROTECTING PROSPERITY
             </p>
           </div>

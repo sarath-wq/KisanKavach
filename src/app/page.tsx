@@ -96,9 +96,9 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
           
           {/* Logo Branding Display */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-3xl overflow-hidden shadow-2xl border-2 border-emerald-500/40 bg-white p-1 mb-6">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-3xl overflow-hidden shadow-2xl border-2 border-emerald-500/40 bg-white p-2 mb-6">
             <Image
-              src="/logo.png"
+              src="/logo-shield.png"
               alt="KisanKavach Official Shield Logo"
               width={112}
               height={112}
