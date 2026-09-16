@@ -1,0 +1,12 @@
+# Apache Content Negotiation & Passenger Routing
+DirectoryIndex index.html app.js index.php
+
+<IfModule mod_passenger.c>
+  PassengerEnabled on
+  PassengerAppType node
+  PassengerStartupFile app.js
+</IfModule>
+
+<IfModule mod_security2.c>
+  SecRuleEngine Off
+</IfModule>

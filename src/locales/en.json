@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "KisanKavach Karnataka",
+    "subtitle": "Digital Credit, Governance & Farmer Protection System",
+    "tagline": "One secure digital layer for farmer credit, benefits, insurance, grievances and protection.",
+    "sandboxBadge": "Sandbox Integration",
+    "pilotDisclaimer": "Demonstration / Pilot Environment — For Official Demo Purpose",
+    "brandName": "Kisan.digikavach.net"
+  },
+  "nav": {
+    "home": "Home",
+    "profile": "My Profile",
+    "kcc": "KCC Credit",
+    "benefits": "My Benefits",
+    "insurance": "Crop Insurance",
+    "grievances": "Grievances",
+    "fraud": "Cyber Kavach",
+    "notifications": "Notifications",
+    "aiAssistant": "Kisan AI",
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "slaBreaches": "SLA Breaches",
+    "reports": "Reports",
+    "users": "User Management",
+    "auditLogs": "Audit Logs",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "roles": {
+    "farmer": "Farmer",
+    "bankOfficer": "Bank Officer",
+    "govtOfficer": "Government Officer",
+    "districtOfficer": "District Officer",
+    "admin": "System Administrator"
+  },
+  "farmer": {
+    "welcome": "Namaskara",
+    "farmerId": "Farmer ID",
+    "landholding": "Total Landholding",
+    "acres": "acres",
+    "kccStatus": "KCC Credit Status",
+    "activeBenefits": "Government Benefits",
+    "insuranceStatus": "Crop Protection",
+    "kavachAlerts": "Cyber Kavach Alerts",
+    "noAlerts": "No Critical Alerts",
+    "trackKcc": "Track My KCC Application",
+    "applyKcc": "Apply For New KCC Loan",
+    "raiseGrievance": "Raise Grievance / SLA Delay",
+    "checkMessage": "Verify SMS or Phishing Link"
+  },
+  "kcc": {
+    "wizardTitle": "KCC Credit Application Wizard",
+    "step1": "Farmer Details",
+    "step2": "Land Information",
+    "step3": "Crop Details",
+    "step4": "Credit Requirement",
+    "step5": "Select Bank Branch",
+    "step6": "Document Upload",
+    "step7": "Data Access Consent",
+    "step8": "Review Application",
+    "step9": "Submit Application",
+    "appId": "Application ID",
+    "stage": "Current Stage",
+    "slaDays": "SLA Working Days",
+    "elapsed": "Elapsed",
+    "remaining": "Remaining",
+    "breached": "SLA BREACHED",
+    "responsible": "Responsible Unit"
+  },
+  "fraud": {
+    "title": "Cyber Kavach — Fraud Protection",
+    "subtitle": "Instant verification for suspicious SMS, WhatsApp messages, URLs, or phone numbers.",
+    "inputPlaceholder": "Paste suspicious SMS text, WhatsApp message, or link here...",
+    "analyzeBtn": "Check Risk Level",
+    "highRisk": "HIGH RISK PHISHING DETECTED",
+    "lowRisk": "LOW RISK / SAFE MESSAGE",
+    "reportFraud": "Report Fraud To Cyber Cell"
+  },
+  "ai": {
+    "title": "KisanKavach AI Assistant",
+    "subtitle": "Multilingual assistance powered by pilot data context.",
+    "placeholder": "Ask a question about your KCC, benefits, or grievances...",
+    "disclaimer": "Based on pilot sandbox data. Does not issue legal loan approvals."
+  }
+}

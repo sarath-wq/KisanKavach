@@ -1,0 +1,406 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  FARMER
+  BANK_OFFICER
+  GOVT_OFFICER
+  DISTRICT_OFFICER
+  ADMIN
+}
+
+enum ApplicationStage {
+  DRAFT
+  SUBMITTED
+  FARMER_VERIFICATION
+  LAND_VERIFICATION
+  DOCUMENT_VERIFICATION
+  CREDIT_ASSESSMENT
+  SANCTION_PENDING
+  SANCTIONED
+  DISBURSED
+  CLARIFICATION_REQUIRED
+  REJECTED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  PROCESSING
+  ACTION_REQUIRED
+  SANCTIONED
+  REJECTED
+  SLA_BREACHED
+}
+
+enum GrievanceCategory {
+  KCC
+  BANK
+  INSURANCE
+  GOVT_BENEFIT
+  FARMER_PROFILE
+  LAND_INFO
+  SUBSIDY
+  FRAUD
+  OTHER
+}
+
+enum GrievanceStatus {
+  REGISTERED
+  ASSIGNED
+  UNDER_REVIEW
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  passwordHash   String
+  name           String
+  role           Role
+  mobile         String?
+  districtId     String?
+  bankBranchId   String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  farmerProfile  Farmer?
+  district       District?   @relation(fields: [districtId], references: [id])
+  bankBranch     BankBranch? @relation(fields: [bankBranchId], references: [id])
+  auditLogs      AuditLog[]
+  grievancesAssigned Grievance[] @relation("AssignedOfficer")
+  comments       GrievanceComment[]
+}
+
+model District {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  nameKn    String
+  state     String   @default("Karnataka")
+
+  taluks    Taluk[]
+  farmers   Farmer[]
+  users     User[]
+  branches  BankBranch[]
+}
+
+model Taluk {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  nameKn      String
+  districtId  String
+
+  district    District   @relation(fields: [districtId], references: [id])
+  villages    Village[]
+  farmers     Farmer[]
+  branches    BankBranch[]
+}
+
+model Village {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  nameKn      String
+  talukId     String
+
+  taluk       Taluk    @relation(fields: [talukId], references: [id])
+  farmers     Farmer[]
+}
+
+model Bank {
+  id        String       @id @default(uuid())
+  code      String       @unique
+  name      String
+  type      String       // RRB, Cooperative, Commercial, PSB
+
+  branches  BankBranch[]
+}
+
+model BankBranch {
+  id          String   @id @default(uuid())
+  bankId      String
+  branchName  String
+  ifscCode    String   @unique
+  districtId  String
+  talukId     String
+
+  bank        Bank     @relation(fields: [bankId], references: [id])
+  district    District @relation(fields: [districtId], references: [id])
+  taluk       Taluk    @relation(fields: [talukId], references: [id])
+  users       User[]
+  applications KCCApplication[]
+}
+
+model Farmer {
+  id                 String   @id @default(uuid())
+  farmerIdCode       String   @unique
+  userId             String   @unique
+  name               String
+  nameKn             String
+  mobile             String
+  aadhaarMasked      String
+  villageId          String
+  talukId            String
+  districtId         String
+  landSizeAcres      Float
+  verificationStatus String   @default("VERIFIED")
+  fruitsId           String?
+  bhoomiId           String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user               User            @relation(fields: [userId], references: [id])
+  village            Village         @relation(fields: [villageId], references: [id])
+  taluk              Taluk           @relation(fields: [talukId], references: [id])
+  district           District        @relation(fields: [districtId], references: [id])
+  landHoldings       LandHolding[]
+  applications       KCCApplication[]
+  benefits           FarmerBenefit[]
+  policies           InsurancePolicy[]
+  grievances         Grievance[]
+  fraudReports       FraudReport[]
+  consentRecords     ConsentRecord[]
+}
+
+model LandHolding {
+  id                 String   @id @default(uuid())
+  farmerId           String
+  surveyNumberMasked String
+  villageName        String
+  areaAcres          Float
+  soilType           String
+  irrigationStatus   String
+  fruitsRef          String?
+  bhoomiRef          String?
+
+  farmer             Farmer   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  crops              Crop[]
+}
+
+model Crop {
+  id            String      @id @default(uuid())
+  landHoldingId String
+  cropName      String
+  cropNameKn    String
+  season        String
+  areaAcres     Float
+  expectedYield String
+  year          Int         @default(2026)
+
+  landHolding   LandHolding @relation(fields: [landHoldingId], references: [id], onDelete: Cascade)
+}
+
+model KCCApplication {
+  id                    String            @id @default(uuid())
+  applicationId         String            @unique
+  farmerId              String
+  bankBranchId          String
+  loanAmountRequested   Float
+  loanAmountSanctioned  Float?
+  purpose               String
+  currentStage          ApplicationStage  @default(SUBMITTED)
+  status                ApplicationStatus @default(PROCESSING)
+  responsibleParty      String
+  slaDaysTotal          Int               @default(7)
+  slaDaysElapsed        Int               @default(0)
+  slaBreached           Boolean           @default(false)
+  rejectionReason       String?
+  rejectionCategory     String?
+  remarks               String?
+  submittedAt           DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  farmer                Farmer                        @relation(fields: [farmerId], references: [id])
+  bankBranch            BankBranch                    @relation(fields: [bankBranchId], references: [id])
+  statusHistory         KCCApplicationStatusHistory[]
+  documents             KCCDocument[]
+  grievances            Grievance[]
+}
+
+model KCCApplicationStatusHistory {
+  id            String            @id @default(uuid())
+  applicationId String
+  stage         ApplicationStage
+  status        ApplicationStatus
+  actionByUser  String
+  remarks       String?
+  createdAt     DateTime          @default(now())
+
+  application   KCCApplication    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model KCCDocument {
+  id            String   @id @default(uuid())
+  applicationId String
+  docType       String
+  docName       String
+  fileUrl       String
+  verified      Boolean  @default(false)
+  uploadedAt    DateTime @default(now())
+
+  application   KCCApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model BenefitScheme {
+  id            String          @id @default(uuid())
+  code          String          @unique
+  name          String
+  nameKn        String
+  description   String
+  provider      String
+  category      String
+  active        Boolean         @default(true)
+
+  farmerBenefits FarmerBenefit[]
+}
+
+model FarmerBenefit {
+  id                   String        @id @default(uuid())
+  farmerId             String
+  schemeId             String
+  status               String
+  lastDisbursementDate DateTime?
+  amountReceived       Float?
+  nextAction           String?
+
+  farmer               Farmer        @relation(fields: [farmerId], references: [id])
+  scheme               BenefitScheme @relation(fields: [schemeId], references: [id])
+}
+
+model InsurancePolicy {
+  id            String           @id @default(uuid())
+  policyNumber  String           @unique
+  farmerId      String
+  crop          String
+  season        String
+  year          Int              @default(2026)
+  sumInsured    Float
+  premiumPaid   Float
+  policyStatus  String           @default("Active")
+  claimStatus   String           @default("No Active Claim")
+  createdAt     DateTime         @default(now())
+
+  farmer        Farmer           @relation(fields: [farmerId], references: [id])
+  claims        InsuranceClaim[]
+}
+
+model InsuranceClaim {
+  id           String          @id @default(uuid())
+  policyId     String
+  claimNumber  String          @unique
+  amountClaimed Float
+  status       String
+  filedAt      DateTime        @default(now())
+  resolvedAt   DateTime?
+
+  policy       InsurancePolicy @relation(fields: [policyId], references: [id])
+}
+
+model Grievance {
+  id                String            @id @default(uuid())
+  grievanceId       String            @unique
+  farmerId          String
+  applicationId     String?
+  category          GrievanceCategory
+  subject           String
+  description       String
+  status            GrievanceStatus   @default(REGISTERED)
+  priority          String            @default("MEDIUM")
+  assignedToUserId  String?
+  resolvedAt        DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  farmer            Farmer            @relation(fields: [farmerId], references: [id])
+  application       KCCApplication?   @relation(fields: [applicationId], references: [id])
+  assignedOfficer   User?             @relation("AssignedOfficer", fields: [assignedToUserId], references: [id])
+  comments          GrievanceComment[]
+}
+
+model GrievanceComment {
+  id          String    @id @default(uuid())
+  grievanceId String
+  userId      String
+  comment     String
+  isInternal  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model FraudReport {
+  id             String    @id @default(uuid())
+  reportId       String    @unique
+  farmerId       String?
+  category       String
+  textAnalyzed   String
+  source         String
+  riskScore      Float
+  riskLevel      RiskLevel
+  reportedToGovt Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+
+  farmer         Farmer?   @relation(fields: [farmerId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  titleKn   String
+  message   String
+  messageKn String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  userRole     String?
+  action       String
+  entity       String
+  entityId     String?
+  metadataJson String?
+  ipAddress    String?  @default("127.0.0.1")
+  createdAt    DateTime @default(now())
+
+  user         User?    @relation(fields: [userId], references: [id])
+}
+
+model ConsentRecord {
+  id         String    @id @default(uuid())
+  farmerId   String
+  purpose    String
+  scopesJson String
+  granted    Boolean   @default(true)
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  farmer     Farmer    @relation(fields: [farmerId], references: [id])
+}
+
+model SLAConfiguration {
+  id                     String @id @default(uuid())
+  stage                  ApplicationStage @unique
+  workingDaysAllowed     Int
+  warningThresholdPercent Int    @default(80)
+}

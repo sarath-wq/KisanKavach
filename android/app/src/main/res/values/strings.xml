@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KisanKavach</string>
+    <string name="title_activity_main">KisanKavach</string>
+    <string name="package_name">net.digikavach.kisan</string>
+    <string name="custom_url_scheme">net.digikavach.kisan</string>
+</resources>
